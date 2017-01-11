@@ -1,0 +1,9 @@
+* The Go Programming Language Exercises
+
+This repo contains my solutions to the exercises proposed in The Go Programming
+Language book for the book 1st edition; see [[http://www.gopl.io]].
+
+Most of files contains code from, or are based on, the samples provided that 
+accompanies the book and can be found at [[https://github.com/adonovan/gopl.io/]]
+
+This code is under [[http://creativecommons.org/licenses/by-nc-sa/4.0/][Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License]]
