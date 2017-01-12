@@ -118,7 +118,7 @@ func (s *IntSet) String() string {
 func (s *IntSet) Len() int {
 	var count int
 	for _, w := range s.words {
-		count += popCount(w)
+		count += popCount(uint64(w))
 	}
 
 	return count
@@ -180,9 +180,13 @@ func wordBit(x int) (int, uint) {
 // taken from popcount
 // Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // can be found at https://github.com/adonovan/gopl.io
-func popCount(x uint) int {
+func popCount(x uint64) int {
 	return int(pc[byte(x>>(0*8))] +
 		pc[byte(x>>(1*8))] +
 		pc[byte(x>>(2*8))] +
-		pc[byte(x>>(3*8))])
+		pc[byte(x>>(3*8))] +
+		pc[byte(x>>(4*8))] +
+		pc[byte(x>>(5*8))] +
+		pc[byte(x>>(6*8))] +
+		pc[byte(x>>(7*8))])
 }
