@@ -206,7 +206,6 @@ func TestIntersect(t *testing.T) {
 		t.Errorf("Set %s should be empty", setA)
 	}
 
-
 	setA.Clear()
 	setB.Clear()
 
@@ -216,6 +215,78 @@ func TestIntersect(t *testing.T) {
 
 	if setA.Len() != 1 || !setA.Has(1) {
 		t.Errorf("Set %s should have 1", setA)
+	}
+}
+
+func TestDifference(t *testing.T) {
+	setA := new(IntSet)
+	setB := new(IntSet)
+
+	setA.AddAll(1, 2, 3)
+	setB.Add(1)
+	setA.DifferenceWith(setB)
+	if setA.Has(1) || !setA.Has(2) || !setA.Has(3) || setA.Len() != 2 {
+		t.Errorf("Set %s should be {2, 3}", setA)
+	}
+
+	setA.Clear()
+	setB.Clear()
+
+	setA.AddAll(1, 2)
+	setA.DifferenceWith(setB)
+	if setA.Len() != 2 {
+		t.Errorf("Set %s should be {1, 2}", setA)
+	}
+
+	setA.Clear()
+	setB.Clear()
+
+	setA.Add(1)
+	setB.AddAll(1, 2, 3)
+	setA.DifferenceWith(setB)
+	if setA.Len() != 0 {
+		t.Errorf("Set %s should be empty", setA)
+	}
+}
+
+func TestSymmetricDifference(t *testing.T) {
+	setA := new(IntSet)
+	setB := new(IntSet)
+
+	setA.AddAll(1, 2)
+	setB.AddAll(1, 3)
+	setA.SymmetricDifferenceWith(setB)
+	if setA.Has(1) || !setA.Has(2) || !setA.Has(3) || setA.Len() != 2 {
+		t.Errorf("Set %s should be {2, 3}", setA)
+	}
+
+	setA.Clear()
+	setB.Clear()
+
+	setA.AddAll(1, 2)
+	setA.SymmetricDifferenceWith(setB)
+	if setA.Len() != 2 {
+		t.Errorf("Set %s should be {1, 2}", setA)
+	}
+
+	setA.Clear()
+	setB.Clear()
+
+	setA.Add(1)
+	setB.AddAll(1, 2, 3)
+	setA.SymmetricDifferenceWith(setB)
+	if setA.Len() != 2 {
+		t.Errorf("Set %s should be {2, 3}", setA)
+	}
+
+	setA.Clear()
+	setB.Clear()
+
+	setA.AddAll(1, 2, 3)
+	setB.AddAll(1, 2, 3)
+	setA.SymmetricDifferenceWith(setB)
+	if setA.Len() != 0 {
+		t.Errorf("Set %s should be {2, 3}", setA)
 	}
 
 }
