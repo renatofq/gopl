@@ -4,90 +4,94 @@
 // Derivative work Copyright © 2017 Renato Fernandes de Queioz.
 // License: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-// See exercise 7.8 of The Go Programming Language (http://www.gopl.io/)
+// See exercise 7.9 of The Go Programming Language (http://www.gopl.io/)
 package main
 
-import (
-	"container/list"
-	"fmt"
-)
+import "container/list"
 
-type trackSorter struct {
-	tracks        []*Track
-	fieldSortList *list.List
+type trackSort struct {
+	tracks   []*Track
+	sortList *list.List
+}
+
+type sortProperty struct {
+	name string
+	less func(x, y *Track) bool
 }
 
 // Len length of the dataset
-func (ts *trackSorter) Len() int {
+func (ts *trackSort) Len() int {
 	return len(ts.tracks)
 }
 
 // Swap swaps ith element int the dataset with the jth
-func (ts *trackSorter) Swap(i, j int) {
+func (ts *trackSort) Swap(i, j int) {
 	ts.tracks[i], ts.tracks[j] = ts.tracks[j], ts.tracks[i]
 }
 
 // Less returns true if the ith element is lesser than jth
-func (ts *trackSorter) Less(i, j int) bool {
-	for field := ts.fieldSortList.Front(); field != nil; field = field.Next() {
+func (ts *trackSort) Less(i, j int) bool {
+	for field := ts.sortList.Front(); field != nil; field = field.Next() {
 
-		switch field.Value.(string) {
-		case "Title":
-			if ts.tracks[i].Title == ts.tracks[j].Title {
-				continue
-			} else {
-				return ts.tracks[i].Title < ts.tracks[j].Title
-			}
-		case "Artist":
-			if ts.tracks[i].Artist == ts.tracks[j].Artist {
-				continue
-			} else {
-				return ts.tracks[i].Artist < ts.tracks[j].Artist
-			}
-		case "Album":
-			if ts.tracks[i].Album == ts.tracks[j].Album {
-				continue
-			} else {
-				return ts.tracks[i].Album < ts.tracks[j].Album
-			}
-		case "Year":
-			if ts.tracks[i].Year == ts.tracks[j].Year {
-				continue
-			} else {
-				return ts.tracks[i].Year < ts.tracks[j].Year
-			}
-		case "Length":
-			if ts.tracks[i].Length == ts.tracks[j].Length {
-				continue
-			} else {
-				return ts.tracks[i].Length < ts.tracks[j].Length
-			}
-		default:
-			panic(fmt.Sprintf("invalid field found in the field sort list: %s",
-				field.Value))
+		sortProp := field.Value.(*sortProperty)
+		if !sortProp.less(ts.tracks[i], ts.tracks[j]) &&
+			!sortProp.less(ts.tracks[j], ts.tracks[i]) {
+			continue
+		} else {
+			return sortProp.less(ts.tracks[i], ts.tracks[j])
 		}
 	}
 
 	return false
 }
 
-func (ts *trackSorter) SortBy(fieldName string) {
-	l := ts.fieldSortList
+func (ts *trackSort) SortBy(fieldName string) {
+	l := ts.sortList
 	for field := l.Front(); field != nil; field = field.Next() {
-		if field.Value == fieldName {
+		if prop := field.Value.(*sortProperty); prop.name == fieldName {
 			l.MoveToFront(field)
 			break
 		}
 	}
 }
 
-func newTrackSorter(tracks []*Track) *trackSorter {
-	ts := &trackSorter{tracks: tracks, fieldSortList: list.New()}
-	ts.fieldSortList.PushBack("Title")
-	ts.fieldSortList.PushBack("Artist")
-	ts.fieldSortList.PushBack("Album")
-	ts.fieldSortList.PushBack("Year")
-	ts.fieldSortList.PushBack("Length")
+func newTrackSort(tracks []*Track) *trackSort {
+	ts := &trackSort{tracks: tracks, sortList: list.New()}
+
+	ts.sortList.PushBack(&sortProperty{
+		name: "Title",
+		less: func(x, y *Track) bool {
+			return x.Title < y.Title
+		},
+	})
+
+	ts.sortList.PushBack(&sortProperty{
+		name: "Artist",
+		less: func(x, y *Track) bool {
+			return x.Artist < y.Artist
+		},
+	})
+
+	ts.sortList.PushBack(&sortProperty{
+		name: "Album",
+		less: func(x, y *Track) bool {
+			return x.Album < y.Album
+		},
+	})
+
+	ts.sortList.PushBack(&sortProperty{
+		name: "Year",
+		less: func(x, y *Track) bool {
+			return x.Year < y.Year
+		},
+	})
+
+	ts.sortList.PushBack(&sortProperty{
+		name: "Length",
+		less: func(x, y *Track) bool {
+			return x.Length < y.Length
+		},
+	})
 
 	return ts
 }

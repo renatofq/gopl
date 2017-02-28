@@ -42,12 +42,12 @@ var trackList = template.Must(template.New("tracklist").Parse(`
 `))
 
 type App struct {
-	ts     *trackSorter
+	ts     *trackSort
 	tracks []*Track
 }
 
 func main() {
-	app := &App{ts: newTrackSorter(tracks), tracks: tracks}
+	app := &App{ts: newTrackSort(tracks), tracks: tracks}
 	http.HandleFunc("/", app.trackListHandler)
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
