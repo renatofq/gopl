@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/renatofq/gopl/e7_5"
-
 )
 
 func TestReader(t *testing.T) {
