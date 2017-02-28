@@ -1,4 +1,4 @@
-/ This file is a derivative work of "findlinks1"
+// This file is a derivative work of "findlinks1"
 // Original work Copyright © 2016 Alan A. A. Donovan & Brian W. Kernighan.
 // Original work can be found at https://github.com/adonovan/gopl.io
 // Derivative work Copyright © 2017 Renato Fernandes de Queioz.

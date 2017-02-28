@@ -5,6 +5,8 @@
 
 // e5_16 exports Join that receives a separator and a varadic string
 // and returns a joined version of it
+package e5_16
+
 import (
 	"bytes"
 )
