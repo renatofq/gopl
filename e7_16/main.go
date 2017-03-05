@@ -12,7 +12,7 @@ import (
 	"github.com/renatofq/gopl/e7_16/eval"
 )
 
-var index =`
+var index =[]byte(`
 <!DOCTYPE html>
 <html>
   <head>
@@ -47,11 +47,11 @@ var index =`
     </script>
   </body>
 </html>
-`
+`)
 
 // indexHandler returns index page
 func indexHandler(w http.ResponseWriter, r *http.Request)  {
-	w.Write([]byte(index))
+	w.Write(index)
 }
 
 // calcHandler evaluates the 'expr' query parameter and returns the result
