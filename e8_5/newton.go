@@ -52,7 +52,6 @@ func main() {
 			fmt.Fprintf(os.Stderr,
 				"number of processes (%d) cannot be lesser than or equal to 0\n",
 				i)
-		}
 		} else {
 			nConcurrent = i
 		}
