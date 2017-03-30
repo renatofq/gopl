@@ -8,44 +8,84 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/png"
 	"math/cmplx"
 	"os"
+	"runtime"
+	"strconv"
 )
 
+const maxConcurrency = 1024 // no special reason for this number
+
+const (
+	xmin, ymin, xmax, ymax = -2, -2, +2, +2
+	width, height          = 1024, 1024
+)
+
+type operand struct {
+	px, py int
+	z      complex128
+}
+
+type result struct {
+	px, py int
+	color  color.Color
+}
+
 func main() {
-	const (
-		xmin, ymin, xmax, ymax = -2, -2, +2, +2
-		width, height          = 1024, 1024
-	)
 
-	type result struct {
-		px, py int
-		color  color.Color
-	}
-
-	ch := make(chan result, 4)
-
-	img := image.NewRGBA(image.Rect(0, 0, width, height))
-	for py := 0; py < height; py++ {
-		y := float64(py)/height*(ymax-ymin) + ymin
-		for px := 0; px < width; px++ {
-			x := float64(px)/width*(xmax-xmin) + xmin
-			z := complex(x, y)
-			go func(py, px int, z complex128) {
-				ch <- result{
-					px:    px,
-					py:    py,
-					color: newton(z),
-				}
-			}(py, px, z)
+	nConcurrent := runtime.NumCPU()
+	if len(os.Args) == 2 {
+		i, err := strconv.Atoi(os.Args[1])
+		if err != nil {
+			fmt.Fprintf(os.Stderr,
+				"invalid number of concurrent procesees %v\n",
+				err)
+		} else if i > maxConcurrency {
+			fmt.Fprintf(os.Stderr,
+				"number of concurrent processes (%d) is higher than max(%d)\n",
+				i, maxConcurrency)
+		} else {
+			nConcurrent = i
 		}
 	}
 
+	inch := make(chan operand, nConcurrent)
+	outch := make(chan result, nConcurrent)
+	defer close(outch)
+
+	for i := 0; i < nConcurrent; i++ {
+		go func() {
+			for op := range inch {
+				c := newton(op.z)
+				outch <- result{
+					px:    op.px,
+					py:    op.py,
+					color: c,
+				}
+			}
+		}()
+	}
+
+	go func() {
+		defer close(inch)
+
+		for py := 0; py < height; py++ {
+			y := float64(py)/height*(ymax-ymin) + ymin
+			for px := 0; px < width; px++ {
+				x := float64(px)/width*(xmax-xmin) + xmin
+				z := complex(x, y)
+				inch <- operand{px, py, z}
+			}
+		}
+	}()
+
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 	for i := 0; i < width*height; i++ {
-		res := <-ch
+		res := <-outch
 		img.Set(res.px, res.py, res.color)
 	}
 
