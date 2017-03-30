@@ -21,7 +21,7 @@ var index =[]byte(`
   <body>
     <label for="expr">Expression:</label>
     <input id="expr" type="text" name="expr">
-    <button onclick="eval()">Ok!</button> 
+    <button onclick="eval()">Ok!</button>
     <div id="ans">
     </div>
     <script type="text/javascript">
