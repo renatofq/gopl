@@ -42,12 +42,17 @@ func main() {
 		i, err := strconv.Atoi(os.Args[1])
 		if err != nil {
 			fmt.Fprintf(os.Stderr,
-				"invalid number of concurrent procesees %v\n",
+				"invalid number of procesees %v\n",
 				err)
 		} else if i > maxConcurrency {
 			fmt.Fprintf(os.Stderr,
-				"number of concurrent processes (%d) is higher than max(%d)\n",
+				"number of processes (%d) is higher than max(%d)\n",
 				i, maxConcurrency)
+		} else if i <= 0 {
+			fmt.Fprintf(os.Stderr,
+				"number of processes (%d) cannot be lesser than or equal to 0\n",
+				i)
+		}
 		} else {
 			nConcurrent = i
 		}
